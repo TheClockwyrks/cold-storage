@@ -1,0 +1,5 @@
+# Every format this repository holds is binary media. Declaring it stops git
+# from diffing or merging it as text.
+*.gz   binary
+*.png  binary
+*.webm binary
