@@ -10,3 +10,9 @@ validation media lives at
 ingest reads it.
 
 History is never rewritten: every superproject commit pins a commit here.
+
+The superproject names this repository by the relative URL `../cold-storage`,
+so it resolves on whichever host the superproject was cloned from. Azure Repos
+is where it lives, and `TheClockwyrks/cold-storage` on GitHub is its mirror.
+The pipeline in `.azure-pipelines/mirror.yml` force-pushes `master` there on
+every push to `master`, and nothing else writes to the mirror.

@@ -1,0 +1,42 @@
+# Mirrors `master` to TheClockwyrks/cold-storage on GitHub.
+#
+# The superproject names this repository by the relative URL `../cold-storage`,
+# so a clone of the superproject's GitHub mirror fetches it from the GitHub
+# repository of the same name. This job is the only thing that pushes there.
+# Every superproject pipeline run checks that each pinned commit is on this
+# repository's `master`, so a superproject commit that reaches GitHub names a
+# commit this mirror already holds.
+
+trigger:
+  branches:
+    include:
+      - master
+
+pr: none
+
+pool:
+  vmImage: ubuntu-24.04
+
+jobs:
+  - job: mirror
+    displayName: GitHub mirror
+    timeoutInMinutes: 60
+    steps:
+      # GitHub refuses a push from a shallow clone, so this takes the whole
+      # history. The media itself is only pushed, so the working tree holds the
+      # root files alone.
+      - checkout: self
+        fetchDepth: 0
+        fetchTags: false
+        lfs: false
+        submodules: false
+        sparseCheckoutDirectories: .azure-pipelines
+
+      - task: DownloadSecureFile@1
+        name: mirrorKey
+        displayName: Fetch the mirror's deploy key
+        inputs:
+          secureFile: github-mirror-key-cold-storage
+
+      - script: .azure-pipelines/mirror.sh "$(mirrorKey.secureFilePath)"
+        displayName: Push to the GitHub mirror
